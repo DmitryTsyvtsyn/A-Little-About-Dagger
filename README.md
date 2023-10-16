@@ -250,6 +250,8 @@ Hilt on the contrary should not be used in large projects since it adds another 
 
 As for small projects just as in the case of Dagger, I do not recommend using Hilt as a DI solution, write without unnecessary abstractions so your code will not be tied to a specific library and will remain understandable to others.
 
+[RUSSIAN VERSION](README_RU.md)
+
 ### Conclusion
 
 Enjoy life, write good and understandable code, and of course share your knowledge with people!
