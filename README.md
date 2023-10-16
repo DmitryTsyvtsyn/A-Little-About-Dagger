@@ -1,23 +1,23 @@
 # A-Little-About-Dagger
 
-Всем привет, эта статья о популярной и многим известной библиотеке Dagger, используемой для внедрения зависимостей (DI).
+Hello everyone, this article is about the popular and well-known Dagger library used for dependency injection (DI).
 
-Статья актуальна не только для Android разработчиков, но и для тех кто собирается использовать готовые решения для DI на Java/Kotlin проектах.
+The article is relevant not only for Android developers, but also for those who are going to use ready-made solutions for DI in Java/Kotlin projects.
 
-В данном репозитории содержится два варианта [Android приложения](https://github.com/android/codelab-android-dagger) из Google codelab:
+This repository contains two versions of [Android application](https://github.com/android/codelab-android-dagger) from Google codelab:
 
-1) ветка <code>with_dagger</code> - неизмененный вариант из оригинального репозитория
-2) ветка <code>without_dagger</code> - переделанный в стиле сгенерированного кода Dagger без использования библиотеки
+1) branch <code>with_dagger</code> - unmodified version from the original repository
+2) branch <code>without_dagger</code> - remade in the style of Dagger generated code without using the library
 
-Я решил что написание кода который генерирует Dagger является хорошим примером для понимания как он устроен.
+I decided that writing the code that Dagger generates is a good example for understanding how it works.
 
-Давайте пройдемся по коду.
+Let's walk through the code.
 
-### Что генерирует Dagger?
+### What does Dagger generate?
 
-Условимся, что термин зависимость эквивалентен термину класс из Java/Kotlin языков.
+Let's agree that the term dependency is equivalent to the term class from the Java/Kotlin languages.
 
-Начнем с главного Dagger компонента:
+So, let's start with the main Dagger component:
 
     @Singleton
     // Definition of a Dagger component that adds info from the different modules to the graph
@@ -37,13 +37,13 @@
         fun userManager(): UserManager
     }
 
-Dagger компонент (аннотация <b>@Component</b>) это не какая то магическая штука которая должна существовать в единственном экземпляре, на самом деле вы можете создать множество Dagger компонентов с разными модулями и благодаря такой возможности Dagger является неплохим решением для многомодульных проектов.
+A Dagger component (annotation <b>@Component</b>) is not some kind of magical thing that should exist in a single copy. In fact you can create many Dagger components with different modules and thanks to this feature, Dagger is a good solution for multi-module projects.
 
-Ключевая особенность Dagger компонента состоит в том что он является центральной концепцией библиотеки и все крутится вокруг него, это буквально контейнер с зависимостями.
+The key feature of the Dagger component is that it's the central concept of the library and everything revolves around it, it's literally a container with dependencies.
 
-Есть еще понятие дочернего компонента (аннотация <b>@Subcomponent</b>). Это расширенная концепция Dagger компонента, благодаря которой можно вкладывать в основной компонент дочерние. На самом деле вам ничего не мешает создать отдельные Dagger компоненты и ограничивать их жизненный цикл.
+There is also the concept of a child component (annotation <b>@Subcomponent</b>). This is an extended concept of a Dagger component, thanks to which you can nest child ones in the parent component. In fact there is nothing stopping you from creating separate Dagger components and limiting their lifecycle.
 
-Посмотрим какой код будет сгенерирован для вышеуказанного Dagger компонента в упрощенном виде:
+Let's see what code will be generated for the above Dagger component in a simplified form:
 
     class AppComponentImpl private constructor(private val context: Context) : AppComponent {
     
@@ -72,21 +72,21 @@ Dagger компонент (аннотация <b>@Component</b>) это не к�
     
     }
 
-Разберемся с ключевыми моментами.
+So, let's look at the key points.
 
-##### 1) Dagger использует обертку <b>Provider</b> для отложенного создания экземпляров классов (зависимостей)
+##### 1) Dagger uses the <b>Provider</b> wrapper to lazy instantiate classes (dependencies)
 
-Provider это простейший параметризированный интерфейс с отдним методом, возвращающим экземпляр нужного класса (зависимости):
+Provider is the simplest parameterized interface with a separate method that returns an instance of the desired class (dependency):
 
     public interface Provider<T> {
         T get();
     }
 
-Dagger не может знать когда вам нужен тот или иной класс и поэтому оборачивает процесс создания конкретного экземпляра в Provider. 
+Dagger cannot know when you need a particular class and therefore wraps the process of creating a specific instance in the Provider.
 
-##### 2) Dagger модули хранятся в самом компоненте
+##### 2) Dagger modules are stored in the component itself
 
-Код модуля из указанного примера следующий:
+The module code from the above example is as follows:
 
     @Module
     abstract class StorageModule {
@@ -97,7 +97,7 @@ Dagger не может знать когда вам нужен тот или и�
         
     }
 
-<b>@Binds</b> аннотация используется для того чтобы связать интерфейс Storage с его реализацией, на самом деле это упрощенная конструкция для:
+The <b>@Binds</b> annotation is used to bind the Storage interface to its implementation, in fact it's a simplified construct for:
 
     @Module
     object StorageModule {
@@ -107,11 +107,11 @@ Dagger не может знать когда вам нужен тот или и�
         
     }
 
-Если зависимости в модуле используются в нескольких классах или зависят от классов из Dagger компонента, то Dagger делает их частью компонента, для которого был прописан модуль. В более простом случае модуль напрямую передается в нужный класс.
+If dependencies in a module are used in several classes or depend on classes from a Dagger component, then Dagger makes them part of the component for which the module was written. In a simpler case, the module is directly passed to the desired class.
 
-##### 3) Для дочерних компонентов (@Subcomponent) и зависимостей отмеченных <b>Scope</b> аннотациями создаются отдельные фабрики, так же как и для основного Dagger компонента
+##### 3) Separate factories are created for child components (@Subcomponent) and dependencies marked with <b>Scope</b> annotations, just like for the Dagger component
 
-Для дочернего компонента вы сами прописываете интерфейс Factory, который реализует Dagger при кодгенерации:
+For the child component you write the Factory interface, which Dagger implements during code generation:
 
     @ActivityScope
     // Definition of a Dagger subcomponent
@@ -128,9 +128,9 @@ Dagger не может знать когда вам нужен тот или и�
         fun inject(activity: LoginActivity)
     }
 
-Обратите внимание что для объявления дочернего компонента LoginComponent используется самописная Scope аннотация <b>ActivityScope</b>. 
+Please note that the self-written Scope annotation <b>ActivityScope</b> is used to declare the LoginComponent child component.
 
-Также в Dagger существуют собственные Scope аннотации например <b>@Singleton</b>:
+Dagger also has its own Scope annotations, for example <b>@Singleton</b>:
 
     @Singleton
     class UserManager @Inject constructor(
@@ -141,7 +141,7 @@ Dagger не может знать когда вам нужен тот или и�
         
     }
 
-Для первого и второго случая Dagger генерирует специальные фабрики:
+For the first and second cases, Dagger generates special factories:
 
     class AppComponentImpl private constructor(private val context: Context) : AppComponent {
     
@@ -155,19 +155,19 @@ Dagger не может знать когда вам нужен тот или и�
     
     }
 
-Это тоже своего рода Provider обертки, только с одним отличием - фабрики гарантируют создание нового экземпляра зависимости (класса) при каждом вызове create() метода.
+This is also a kind of Provider wrapper with only one difference - factories guarantee the creation of a new instance of the dependency (class) every time the create() method is called.
 
-##### 4) <b>DoubleCheckProvider</b> обертка для Singleton зависимостей
+##### 4) <b>DoubleCheckProvider</b> wrapper for Singleton dependencies
 
-DoubleCheckProvider это одна из реализаций Provider интерфейса, которая при повтороном вызове метода get() возвращает один и тот же экземпляр класса (зависимости). Вы можете называть это что-то вроде Singleton зависимости.
+DoubleCheckProvider is one of the implementations of the Provider interface, which when the get() method is called repeatedly returns the same instance of the class (dependency). You can call it something like Singleton dependency.
 
-На самом деле в Dagger как такового Singleton не существует, так как вы можете хранить Dagger компонент не в пределах всего приложения, а локально в одном месте и он каждый раз будет пересоздаваться.
+In fact Singleton as such does not exist in Dagger since you can store a Dagger component not within the entire application, but locally in one place and it will be recreated every time.
 
-Важно придерживаться главной фишки Dagger основанной на компонентах, иначе говоря все что вы пишите привязано к Dagger компоненту, и от него зависит жизненный цикл всех зависимостей.
+It's important to adhere to the main feature of Dagger being component-based, in other words everything you write is tied to the Dagger component and the lifecycle of all dependencies depends on it.
 
-##### 5) Dagger генерирует специальные обертки для inject() вызовов (Activity, Fragment)
+##### 5) Dagger generates special wrappers for inject() calls (Activity, Fragment)
 
-Вернемся к одному из дочерних компонентов и узнаем где происходит вызов <b>inject()</b> в Activity или во Fragment:
+Let's go back to one of the child components and find out where the <b>inject()</b> call occurs in the Activity and in the Fragment:
 
     class RegistrationComponentImpl(private val appComponent: AppComponentImpl) : RegistrationComponent {
     
@@ -190,13 +190,12 @@ DoubleCheckProvider это одна из реализаций Provider инте�
     
     }
 
-AppComponentImpl - реализация Dagger компонента, содержит общие зависимости для дочерных компонентов, поэтому RegistrationComponentImpl принимает его в качестве параметра конструктора.
+AppComponentImpl is a Dagger component implementation that contains common dependencies for child components, so RegistrationComponentImpl takes it as a constructor parameter.
 
-RegistrationViewModel является общей зависимостью для RegistrationActivity, EnterDetailsFragment и TermsAndConditionsFragment, поэтому оборачивается в DoubleCheckProvider, чтобы все имели один и тот же экземпляр вьюмодели.
+RegistrationViewModel is a common dependency for RegistrationActivity, EnterDetailsFragment and TermsAndConditionsFragment, so it's wrapped in a DoubleCheckProvider so that they all have the same instance of the viewmodel.
 
-В моем примере конструкция <b>inject()</b> упрощена и не вынесена в отдельные обертки, которые генерирует Dagger:
+In my example the <b>inject()</b> construct is simplified and not included in separate wrappers that Dagger generates:
 
-    
     public final class RegistrationActivity_MembersInjector implements MembersInjector<RegistrationActivity> {
       private final Provider<RegistrationViewModel> registrationViewModelProvider;
     
@@ -217,46 +216,44 @@ RegistrationViewModel является общей зависимостью дл�
       public static void injectRegistrationViewModel(RegistrationActivity instance, RegistrationViewModel registrationViewModel) {
         instance.registrationViewModel = registrationViewModel;
       }
-    }
-    
+    } 
 
-Вам может показаться что этот код избыточен, но Dagger нуждается в таких обертках также как и в Provider и Factory. Это не человек способный понять, где нужно написать <b>inject()</b>, а где нужно создать зависимость.
+You may think this code is redundant, but Dagger needs these wrappers just like Provider and Factory. This is not a person who can understand where to write <b>inject()</b> and where to create a dependency.
 
-### Преимущества Dagger и сфера его использования
+### Advantages of Dagger and scope of its use
 
-Важно отметить, что Dagger генерирует больше кода по сравнению с тем что вы могли написать:
+It's important to note that Dagger generates more code than you might write:
 
-1) Provider обертки на каждую зависимость или отдельные фабрики для дочерних компонентов и Scope аннотированных классов
-2) Классы обертки для inject вызовов в случае с Activity или Fragment
+1) Provider wrappers per dependency or separate factories for child components and Scope annotated classes
+2) Wrapper classes for inject calls in the case of Activity or Fragment
 
-Dagger не стоит использовать в небольших проектах, так как это является лишней абстракцией и дополнительным увеличением количества Java/Kotlin классов в проекте. Следует добавить, что Dagger не является простой в понимании библиотекой, это усложняет читаемость кода и делает его неочевидным для тех кто первый раз столкнулся с ним в проекте.
+Dagger should't be used in small projects as it's an unnecessary abstraction and an additional increase in the number of Java/Kotlin classes in the project. It should be added that Dagger is not an easy-to-understand library. This complicates the readability of the code and makes it not obvious to those who first encountered it in a project.
 
-Я считаю, что Dagger это хорошее решение для крупных проектов с многомодульной структурой, где можно его расширить и адаптировать под свои потребности.
+I believe that Dagger is a good solution for large projects with a multi-module structure where you can expand it and adapt it to your needs.
 
-### Немного о Hilt
+### A little about Hilt
 
-[Hilt](https://developer.android.com/training/dependency-injection/hilt-android) является оберткой над Dagger и по мнению Google хорошим решением для ваших проектов.
+[Hilt](https://developer.android.com/training/dependency-injection/hilt-android) is a wrapper around Dagger and according to Google a good solution for your projects.
 
-Я не мог не обратить внимание на эту библиотеку и решил рассмотреть ее тоже. 
+I couldn't help but pay attention to this library and decided to consider it too.
 
-Вы можете скачать [codelab-android-hilt](https://github.com/android/codelab-android-hilt) и глянуть своими глазами что генерирует Hilt, я лишь отмечу ключевые вещи:
+You can download [codelab-android-hilt](https://github.com/android/codelab-android-hilt) and see with your own eyes what Hilt generates. I’ll just note the key things:
 
-1) Hilt генерирует в 2+ раза больше кода чем Dagger
-2) Если Dagger не трогает ваши Activity и фрагменты, то Hilt генерирует для них суперклассы
-3) Сгенерированный код запутанный, сложно читаемый и неочевидный в отличии от Dagger
-4) Не решает задачи которые не может решить Dagger
+1) Hilt generates 2+ times more code than Dagger
+2) If Dagger does not touch your Activities and fragments, then Hilt generates superclasses for them
+3) The generated code is confusing, difficult to read and not obvious, unlike Dagger
+4) Doesn't solve problems that Dagger can't solve
 
-В итоге, большие проекты с многомодульной структурой, как я уже отметил, вполне могут использовать Dagger, у него достаточно понятный сгенерированный код с возможностью адаптации под свои потребности.
+As a result large projects with a multi-module structure as I already noted can easily use Dagger. It has a fairly clear generated code with the ability to adapt to your needs.
 
-Hilt напротив не стоит использовать в больших проектах, так как он добавляет еще один слой абстракции и его кодген сложный и запутанный, что повышает вероятность ошибок.
+Hilt on the contrary should not be used in large projects since it adds another layer of abstraction and it's codegen is complex and confusing which increases the likelihood of errors.
 
-Что касается небольших проектов, так же как и в случае с Dagger не советую использовать Hilt как DI решение, пишите без лишних и ненужных абстракций, так ваш код не будет привязан к определенной библиотеки и останется понятным другим.
+As for small projects just as in the case of Dagger, I do not recommend using Hilt as a DI solution, write without unnecessary abstractions so your code will not be tied to a specific library and will remain understandable to others.
 
-### Заключение
+### Conclusion
 
-Наслаждайтесь жизнью, пишите хороший и понятный код, и конечно же делитесь знаниями с людьми!
+Enjoy life, write good and understandable code, and of course share your knowledge with people!
 
-Пожелания и улучшения:
+Wishes and improvements:
 
 <a href="https://t.me/rwcwuwr"><img src="https://github.com/evitwilly/A-Little-About-Dagger/assets/40917658/41dbc75f-b3d4-4ef7-9096-f0ad76dfc51b" width="155" /></a>
-
