@@ -258,5 +258,5 @@ Hilt напротив не стоит использовать в больших
 
 Пожелания и улучшения:
 
-<a href="https://t.me/rwcwuwr"><img src="https://github.com/evitwilly/A-Little-About-Dagger/assets/40917658/41dbc75f-b3d4-4ef7-9096-f0ad76dfc51b" width="155" /></a>
+<a href="https://t.me/rwcwuwr"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png" width=160 /></a>
 
