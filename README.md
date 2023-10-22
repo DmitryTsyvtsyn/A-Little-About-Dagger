@@ -107,11 +107,11 @@ The <b>@Binds</b> annotation is used to bind the Storage interface to its implem
         
     }
 
-If dependencies in a module are used in several classes or depend on classes from a Dagger component, then Dagger makes them part of the component for which the module was written. In a simpler case, the module is directly passed to the desired class.
+If dependencies in a module are used in several classes or depend on classes from a Dagger component then Dagger makes them part of the component for which the module was written. In a simpler case the module is directly passed to the desired class.
 
 ##### 3) Separate factories are created for child components (@Subcomponent) and dependencies marked with <b>Scope</b> annotations, just like for the Dagger component
 
-For the child component you write the Factory interface, which Dagger implements during code generation:
+For the child component you write the Factory interface which Dagger implements during code generation:
 
     @ActivityScope
     // Definition of a Dagger subcomponent
@@ -141,7 +141,7 @@ Dagger also has its own Scope annotations, for example <b>@Singleton</b>:
         
     }
 
-For the first and second cases, Dagger generates special factories:
+For the first and second cases Dagger generates special factories:
 
     class AppComponentImpl private constructor(private val context: Context) : AppComponent {
     
@@ -159,7 +159,7 @@ This is also a kind of Provider wrapper with only one difference - factories gua
 
 ##### 4) <b>DoubleCheckProvider</b> wrapper for Singleton dependencies
 
-DoubleCheckProvider is one of the implementations of the Provider interface, which when the get() method is called repeatedly returns the same instance of the class (dependency). You can call it something like Singleton dependency.
+DoubleCheckProvider is one of the implementations of the Provider interface which when the get() method is called repeatedly returns the same instance of the class (dependency). You can call it something like Singleton dependency.
 
 In fact Singleton as such does not exist in Dagger since you can store a Dagger component not within the entire application, but locally in one place and it will be recreated every time.
 
