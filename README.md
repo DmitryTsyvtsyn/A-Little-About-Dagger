@@ -19,6 +19,7 @@ Let's agree that the term dependency is equivalent to the term class from the Ja
 
 So, let's start with the main Dagger component:
 
+```kotlin
     @Singleton
     // Definition of a Dagger component that adds info from the different modules to the graph
     @Component(modules = [StorageModule::class, AppSubcomponents::class])
@@ -36,7 +37,7 @@ So, let's start with the main Dagger component:
         fun loginComponent(): LoginComponent.Factory
         fun userManager(): UserManager
     }
-
+```
 A Dagger component (annotation <b>@Component</b>) is not some kind of magical thing that should exist in a single copy. In fact you can create many Dagger components with different modules and thanks to this feature, Dagger is a good solution for multi-module projects.
 
 The key feature of the Dagger component is that it's the central concept of the library and everything revolves around it, it's literally a container with dependencies.
@@ -45,6 +46,7 @@ There is also the concept of a child component (annotation <b>@Subcomponent</b>)
 
 Let's see what code will be generated for the above Dagger component in a simplified form:
 
+```kotlin
     class AppComponentImpl private constructor(private val context: Context) : AppComponent {
     
         private val sharedStorageProvider = Provider { SharedPreferencesStorage(context) }
@@ -71,6 +73,7 @@ Let's see what code will be generated for the above Dagger component in a simpli
         }
     
     }
+```
 
 So, let's look at the key points.
 
@@ -78,9 +81,11 @@ So, let's look at the key points.
 
 Provider is the simplest parameterized interface with a separate method that returns an instance of the desired class (dependency):
 
+```kotlin
     public interface Provider<T> {
         T get();
     }
+```
 
 Dagger cannot know when you need a particular class and therefore wraps the process of creating a specific instance in the Provider.
 
@@ -88,6 +93,7 @@ Dagger cannot know when you need a particular class and therefore wraps the proc
 
 The module code from the above example is as follows:
 
+```kotlin
     @Module
     abstract class StorageModule {
     
@@ -97,8 +103,11 @@ The module code from the above example is as follows:
         
     }
 
+```
+
 The <b>@Binds</b> annotation is used to bind the Storage interface to its implementation, in fact it's a simplified construct for:
 
+```kotlin
     @Module
     object StorageModule {
     
@@ -106,6 +115,7 @@ The <b>@Binds</b> annotation is used to bind the Storage interface to its implem
         fun provideStorage(context: Context): Storage = SharedPreferencesStorage(context)
         
     }
+```
 
 If dependencies in a module are used in several classes or depend on classes from a Dagger component then Dagger makes them part of the component for which the module was written. In a simpler case the module is directly passed to the desired class.
 
@@ -113,6 +123,7 @@ If dependencies in a module are used in several classes or depend on classes fro
 
 For the child component you write the Factory interface which Dagger implements during code generation:
 
+```kotlin
     @ActivityScope
     // Definition of a Dagger subcomponent
     @Subcomponent
@@ -127,11 +138,13 @@ For the child component you write the Factory interface which Dagger implements 
         // Classes that can be injected by this Component
         fun inject(activity: LoginActivity)
     }
+```
 
 Please note that the self-written Scope annotation <b>ActivityScope</b> is used to declare the LoginComponent child component.
 
 Dagger also has its own Scope annotations, for example <b>@Singleton</b>:
 
+```kotlin
     @Singleton
     class UserManager @Inject constructor(
         ....
@@ -140,9 +153,11 @@ Dagger also has its own Scope annotations, for example <b>@Singleton</b>:
         ....
         
     }
+```
 
 For the first and second cases Dagger generates special factories:
 
+```kotlin
     class AppComponentImpl private constructor(private val context: Context) : AppComponent {
     
         ...
@@ -154,6 +169,7 @@ For the first and second cases Dagger generates special factories:
         ...
     
     }
+```
 
 This is also a kind of Provider wrapper with only one difference - factories guarantee the creation of a new instance of the dependency (class) every time the create() method is called.
 
@@ -169,6 +185,7 @@ It's important to adhere to the main feature of Dagger being component-based, in
 
 Let's go back to one of the child components and find out where the <b>inject()</b> call occurs in the Activity and in the Fragment:
 
+```kotlin
     class RegistrationComponentImpl(private val appComponent: AppComponentImpl) : RegistrationComponent {
     
         private val registrationViewModelProvider = DoubleCheckProvider {
@@ -189,6 +206,7 @@ Let's go back to one of the child components and find out where the <b>inject()<
         }
     
     }
+```
 
 AppComponentImpl is a Dagger component implementation that contains common dependencies for child components, so RegistrationComponentImpl takes it as a constructor parameter.
 
@@ -196,6 +214,7 @@ RegistrationViewModel is a common dependency for RegistrationActivity, EnterDeta
 
 In my example the <b>inject()</b> construct is simplified and not included in separate wrappers that Dagger generates:
 
+```kotlin
     public final class RegistrationActivity_MembersInjector implements MembersInjector<RegistrationActivity> {
       private final Provider<RegistrationViewModel> registrationViewModelProvider;
     
@@ -217,6 +236,7 @@ In my example the <b>inject()</b> construct is simplified and not included in se
         instance.registrationViewModel = registrationViewModel;
       }
     } 
+```
 
 You may think this code is redundant, but Dagger needs these wrappers just like Provider and Factory. This is not a person who can understand where to write <b>inject()</b> and where to create a dependency.
 
