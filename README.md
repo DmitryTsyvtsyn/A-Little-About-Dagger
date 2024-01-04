@@ -256,6 +256,4 @@ As for small projects just as in the case of Dagger, I do not recommend using Hi
 
 Enjoy life, write good and understandable code, and of course share your knowledge with people!
 
-Wishes and improvements:
-
-<a href="https://t.me/rwcwuwr"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/1024px-Telegram_logo.svg.png" width=160 /></a>
+Wishes and improvements: [Telegram](https://t.me/dmitry_tsyvtsyn), [Gmail](mailto:dmitry.kind.2@gmail.com)
