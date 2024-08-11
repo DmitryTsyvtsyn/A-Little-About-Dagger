@@ -1,7 +1,7 @@
 package com.example.android.dagger.user
 
 import com.example.android.dagger.core.AppComponentImpl
-import com.example.android.dagger.core.DoubleCheckProvider
+import com.example.android.dagger.core.providers.DoubleCheckProvider
 import com.example.android.dagger.main.MainActivity
 import com.example.android.dagger.main.MainViewModel
 import com.example.android.dagger.settings.SettingsActivity

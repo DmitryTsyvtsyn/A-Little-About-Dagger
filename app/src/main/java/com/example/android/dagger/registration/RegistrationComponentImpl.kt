@@ -1,13 +1,12 @@
 package com.example.android.dagger.registration
 
 import com.example.android.dagger.core.AppComponentImpl
-import com.example.android.dagger.core.DoubleCheckProvider
+import com.example.android.dagger.core.providers.DoubleCheckProvider
 import com.example.android.dagger.registration.enterdetails.EnterDetailsFragment
 import com.example.android.dagger.registration.enterdetails.EnterDetailsViewModel
 import com.example.android.dagger.registration.termsandconditions.TermsAndConditionsFragment
 
-class RegistrationComponentImpl(private val appComponent: AppComponentImpl) :
-    RegistrationComponent {
+class RegistrationComponentImpl(private val appComponent: AppComponentImpl) : RegistrationComponent {
 
     private val registrationViewModelProvider = DoubleCheckProvider {
         RegistrationViewModel(appComponent.userManagerProvider.get())

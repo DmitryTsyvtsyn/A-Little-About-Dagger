@@ -1,6 +1,8 @@
 package com.example.android.dagger.core
 
 import android.content.Context
+import com.example.android.dagger.core.providers.DoubleCheckProvider
+import com.example.android.dagger.core.providers.Provider
 import com.example.android.dagger.login.LoginComponent
 import com.example.android.dagger.login.LoginComponentImpl
 import com.example.android.dagger.registration.RegistrationComponent

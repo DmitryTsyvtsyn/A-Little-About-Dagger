@@ -1,4 +1,4 @@
-package com.example.android.dagger.core;
+package com.example.android.dagger.core.providers;
 
 // copied from dagger.internal
 public final class DoubleCheckProvider<T> implements Provider<T> {
